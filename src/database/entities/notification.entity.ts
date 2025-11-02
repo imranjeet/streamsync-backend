@@ -14,10 +14,10 @@ export class Notification {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ name: 'user_id' })
+  @Column({ name: 'user_id', type: 'varchar' })
   userId!: string;
 
-  @Column()
+  @Column({ type: 'varchar' })
   title!: string;
 
   @Column({ type: 'text' })
@@ -29,7 +29,7 @@ export class Notification {
   @Column({ name: 'is_deleted', default: false })
   isDeleted!: boolean;
 
-  @Column({ name: 'linked_content', nullable: true })
+  @Column({ name: 'linked_content', type: 'varchar', nullable: true })
   linkedContent!: string | null;
 
   @Column({ type: 'jsonb', nullable: true })

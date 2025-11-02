@@ -17,13 +17,13 @@ export class Progress {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ name: 'user_id' })
+  @Column({ name: 'user_id', type: 'varchar' })
   userId!: string;
 
-  @Column({ name: 'video_id' })
+  @Column({ name: 'video_id', type: 'varchar' })
   videoId!: string;
 
-  @Column({ name: 'position_seconds', default: 0 })
+  @Column({ name: 'position_seconds', type: 'integer', default: 0 })
   positionSeconds!: number;
 
   @Column({ name: 'completed_percent', type: 'decimal', precision: 5, scale: 2, default: 0 })

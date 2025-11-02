@@ -19,7 +19,7 @@ export class PendingAction {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ name: 'user_id' })
+  @Column({ name: 'user_id', type: 'varchar' })
   userId!: string;
 
   @Column({
@@ -31,7 +31,7 @@ export class PendingAction {
   @Column({ type: 'jsonb' })
   payload!: Record<string, any>;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   idempotencyKey!: string | null;
 
   @Column({ name: 'updated_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

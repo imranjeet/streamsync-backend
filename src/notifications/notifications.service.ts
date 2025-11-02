@@ -3,6 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as admin from 'firebase-admin';
+import * as fs from 'fs';
+import * as path from 'path';
 import { Notification } from '../database/entities/notification.entity';
 import { FcmToken } from '../database/entities/fcm-token.entity';
 import { NotificationJob, JobStatus } from '../database/entities/notification-job.entity';
@@ -26,11 +28,26 @@ export class NotificationsService {
   private initializeFirebase() {
     try {
       if (!admin.apps.length) {
+        // Try loading from serviceAccountKey.json file (for local development)
+        const serviceAccountPath = path.join(process.cwd(), 'serviceAccountKey.json');
+        
+        if (fs.existsSync(serviceAccountPath)) {
+          // Use JSON file if it exists (local development)
+          const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
+          console.log('[Firebase] Initializing from serviceAccountKey.json');
+          this.firebaseApp = admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount),
+          });
+          return;
+        }
+
+        // Fallback to environment variables (for Vercel/production)
         const projectId = this.configService.get('FIREBASE_PROJECT_ID');
         const privateKey = this.configService.get('FIREBASE_PRIVATE_KEY')?.replace(/\\n/g, '\n');
         const clientEmail = this.configService.get('FIREBASE_CLIENT_EMAIL');
 
         if (projectId && privateKey && clientEmail) {
+          console.log('[Firebase] Initializing from environment variables');
           this.firebaseApp = admin.initializeApp({
             credential: admin.credential.cert({
               projectId,
@@ -38,12 +55,14 @@ export class NotificationsService {
               clientEmail,
             }),
           });
+        } else {
+          console.warn('[Firebase] Firebase credentials not found. Push notifications will be disabled.');
         }
       } else {
         this.firebaseApp = admin.app();
       }
     } catch (error) {
-      console.error('Firebase initialization error:', error);
+      console.error('[Firebase] Initialization error:', error);
     }
   }
 

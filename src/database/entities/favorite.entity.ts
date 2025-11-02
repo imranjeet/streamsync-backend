@@ -16,10 +16,10 @@ export class Favorite {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ name: 'user_id' })
+  @Column({ name: 'user_id', type: 'varchar' })
   userId!: string;
 
-  @Column({ name: 'video_id' })
+  @Column({ name: 'video_id', type: 'varchar' })
   videoId!: string;
 
   @Column({ default: false })

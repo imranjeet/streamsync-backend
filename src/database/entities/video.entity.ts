@@ -11,28 +11,28 @@ import { Favorite } from './favorite.entity';
 
 @Entity('videos')
 export class Video {
-  @PrimaryColumn({ name: 'video_id' })
+  @PrimaryColumn({ name: 'video_id', type: 'varchar' })
   videoId!: string;
 
-  @Column()
+  @Column({ type: 'varchar' })
   title!: string;
 
   @Column({ type: 'text', nullable: true })
   description!: string | null;
 
-  @Column({ name: 'thumbnail_url' })
+  @Column({ name: 'thumbnail_url', type: 'varchar' })
   thumbnailUrl!: string;
 
-  @Column({ name: 'duration_seconds', nullable: true })
+  @Column({ name: 'duration_seconds', type: 'integer', nullable: true })
   durationSeconds!: number | null;
 
-  @Column({ name: 'published_at', nullable: true })
+  @Column({ name: 'published_at', type: 'timestamp', nullable: true })
   publishedAt!: Date | null;
 
-  @Column({ name: 'channel_id', nullable: true })
+  @Column({ name: 'channel_id', type: 'varchar', nullable: true })
   channelId!: string | null;
 
-  @Column({ name: 'channel_name', nullable: true })
+  @Column({ name: 'channel_name', type: 'varchar', nullable: true })
   channelName!: string | null;
 
   @CreateDateColumn({ name: 'created_at' })

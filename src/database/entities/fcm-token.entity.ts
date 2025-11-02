@@ -14,13 +14,13 @@ export class FcmToken {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ name: 'user_id' })
+  @Column({ name: 'user_id', type: 'varchar' })
   userId!: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, type: 'varchar' })
   token!: string;
 
-  @Column()
+  @Column({ type: 'varchar' })
   platform!: string; // 'ios' | 'android' | 'web'
 
   @CreateDateColumn({ name: 'created_at' })

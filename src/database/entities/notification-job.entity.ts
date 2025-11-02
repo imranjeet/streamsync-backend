@@ -19,10 +19,10 @@ export class NotificationJob {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ name: 'notification_id' })
+  @Column({ name: 'notification_id', type: 'varchar' })
   notificationId!: string;
 
-  @Column({ name: 'fcm_token_id' })
+  @Column({ name: 'fcm_token_id', type: 'varchar' })
   fcmTokenId!: string;
 
   @Column({
@@ -32,7 +32,7 @@ export class NotificationJob {
   })
   status!: JobStatus;
 
-  @Column({ default: 0 })
+  @Column({ type: 'integer', default: 0 })
   retries!: number;
 
   @Column({ name: 'error_message', nullable: true, type: 'text' })

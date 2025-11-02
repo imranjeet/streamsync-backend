@@ -19,6 +19,9 @@ build/
 .env.production
 .env.test
 
+# Firebase credentials (local development)
+serviceAccountKey.json
+
 # Testing
 coverage/
 *.lcov
