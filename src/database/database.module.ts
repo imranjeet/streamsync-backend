@@ -14,26 +14,60 @@ import { PendingAction } from './entities/pending-action.entity';
   imports: [
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get('DB_HOST', 'localhost'),
-        port: configService.get('DB_PORT', 5432),
-        username: configService.get('DB_USERNAME', 'postgres'),
-        password: configService.get('DB_PASSWORD', 'postgres'),
-        database: configService.get('DB_DATABASE', 'streamsync_lite'),
-        entities: [
-          User,
-          Video,
-          Progress,
-          Favorite,
-          Notification,
-          FcmToken,
-          NotificationJob,
-          PendingAction,
-        ],
-        synchronize: configService.get('NODE_ENV') === 'development',
-        logging: configService.get('NODE_ENV') === 'development',
-      }),
+      useFactory: (configService: ConfigService) => {
+        // Support DATABASE_URL (Neon, Vercel Postgres, etc.) or individual parameters
+        const databaseUrl = configService.get('DATABASE_URL') || 
+                           configService.get('POSTGRES_URL') ||
+                           configService.get('POSTGRES_PRISMA_URL');
+        
+        if (databaseUrl) {
+          // Use URL-based connection (for Neon, Vercel Postgres, etc.)
+          return {
+            type: 'postgres',
+            url: databaseUrl,
+            entities: [
+              User,
+              Video,
+              Progress,
+              Favorite,
+              Notification,
+              FcmToken,
+              NotificationJob,
+              PendingAction,
+            ],
+            synchronize: configService.get('NODE_ENV') === 'development',
+            logging: configService.get('NODE_ENV') === 'development',
+            ssl: databaseUrl.includes('sslmode=require') || databaseUrl.includes('ssl=true') 
+              ? { rejectUnauthorized: false } 
+              : false,
+          };
+        }
+        
+        // Fallback to individual parameters
+        return {
+          type: 'postgres',
+          host: configService.get('DB_HOST') || configService.get('PGHOST') || configService.get('POSTGRES_HOST') || 'localhost',
+          port: parseInt(configService.get('DB_PORT') || configService.get('PGPORT') || '5432', 10),
+          username: configService.get('DB_USERNAME') || configService.get('PGUSER') || configService.get('POSTGRES_USER') || 'postgres',
+          password: configService.get('DB_PASSWORD') || configService.get('PGPASSWORD') || configService.get('POSTGRES_PASSWORD') || 'postgres',
+          database: configService.get('DB_DATABASE') || configService.get('PGDATABASE') || configService.get('POSTGRES_DATABASE') || 'streamsync_lite',
+          entities: [
+            User,
+            Video,
+            Progress,
+            Favorite,
+            Notification,
+            FcmToken,
+            NotificationJob,
+            PendingAction,
+          ],
+          synchronize: configService.get('NODE_ENV') === 'development',
+          logging: configService.get('NODE_ENV') === 'development',
+          ssl: configService.get('DB_SSL') === 'true' || configService.get('POSTGRES_SSL') === 'true'
+            ? { rejectUnauthorized: false }
+            : false,
+        };
+      },
       inject: [ConfigService],
     }),
     TypeOrmModule.forFeature([

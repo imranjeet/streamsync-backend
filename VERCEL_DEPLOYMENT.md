@@ -19,12 +19,19 @@ Set these environment variables in Vercel Dashboard (Settings → Environment Va
 
 ### Required:
 ```
-# Database
-DB_HOST=your-database-host
-DB_PORT=5432
-DB_USERNAME=your-username
-DB_PASSWORD=your-password
-DB_DATABASE=streamsync_lite
+# Database (Neon PostgreSQL)
+# Option 1: Use DATABASE_URL (Recommended - supports connection pooling)
+DATABASE_URL=postgresql://neondb_owner:npg_S8aCLEpuJ0ek@ep-withered-mud-a1zuocqa-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
+
+# Option 2: Use POSTGRES_URL (Vercel Postgres compatible)
+POSTGRES_URL=postgresql://neondb_owner:npg_S8aCLEpuJ0ek@ep-withered-mud-a1zuocqa-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
+
+# Option 3: Individual parameters (fallback)
+# DB_HOST=ep-withered-mud-a1zuocqa-pooler.ap-southeast-1.aws.neon.tech
+# DB_PORT=5432
+# DB_USERNAME=neondb_owner
+# DB_PASSWORD=npg_S8aCLEpuJ0ek
+# DB_DATABASE=neondb
 
 # JWT
 JWT_SECRET=your-secret-minimum-32-characters
@@ -48,6 +55,12 @@ YOUTUBE_CHANNEL_ID=your-channel-id
 CORS_ORIGIN=*
 CRON_SECRET=your-cron-secret-for-worker-security
 ```
+
+### Neon Database Setup:
+The application is configured for **Neon PostgreSQL**. The database module automatically:
+- Detects `DATABASE_URL` or `POSTGRES_URL` and uses connection pooling
+- Falls back to individual parameters if URL is not provided
+- Enables SSL/TLS for secure connections
 
 ## Step 3: Deploy to Vercel
 
