@@ -120,6 +120,13 @@ export class NotificationsService {
     // Queue push job
     await this.queuePushNotification(savedNotification.id, userId);
 
+    // Attempt immediate processing to reduce latency in serverless environments
+    try {
+      await this.processNotificationJobs();
+    } catch (e) {
+      console.warn('Immediate job processing failed (will be handled by worker/cron):', e);
+    }
+
     return savedNotification;
   }
 
@@ -205,6 +212,13 @@ export class NotificationsService {
     // Queue push job
     await this.queuePushNotification(savedNotification.id, userId);
 
+    // Attempt immediate processing for test pushes to deliver in near real-time
+    try {
+      await this.processNotificationJobs();
+    } catch (e) {
+      console.warn('Immediate job processing failed (will be handled by worker/cron):', e);
+    }
+
     return savedNotification;
   }
 
@@ -281,9 +295,29 @@ export class NotificationsService {
               title: notification.title,
               body: notification.body,
             },
+            android: {
+              priority: 'high',
+              notification: {
+                channelId: 'default',
+                sound: 'default',
+              },
+            },
+            apns: {
+              headers: {
+                'apns-priority': '10',
+              },
+              payload: {
+                aps: {
+                  sound: 'default',
+                  'content-available': 1,
+                },
+              },
+            },
             data: {
               notificationId: notification.id,
               linkedContent: notification.linkedContent || '',
+              userId: notification.userId,
+              type: (notification.metadata as any)?.type || 'system',
             },
           });
 
